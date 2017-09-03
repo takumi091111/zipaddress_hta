@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>住所検索API</title>
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="s-container container">
+        <h3>住所検索API</h3>
+        <div class="input-group">
+            <input type="text" id="zipcode" class="form-input" placeholder="ZipCode" oninput="changeZipCode(this)"/>
+            <button class="btn btn-primary input-group-btn" onclick="submit()">Submit</button>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="request">Request URL + Parameter</label>
+            <input class="form-input" type="text" id="request" readonly="readonly" value="https://api.zipaddress.net/?zipcode=&callback=?" />
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="responce">Responce</label>
+            <textarea class="form-input" id="responce" rows="5"></textarea>
+        </div>
+    </div>
+    <script>
+        function getJSONP(url, success) {
+            var ud = '_' + +new Date,
+                script = document.createElement('script'),
+                head = document.getElementsByTagName('head')[0]
+                       || document.documentElement;
+            window[ud] = function(data) {
+                head.removeChild(script);
+                success && success(data);
+            };
+            script.src = url.replace('callback=?', 'callback=' + ud);
+            head.appendChild(script);
+        }
+
+        function changeZipCode($this) {
+            const API_URL = "https://api.zipaddress.net/?zipcode=";
+            document.getElementById("request").value = API_URL + $this.value + "&callback=?";
+        }
+
+        function submit() {
+            var requestURL = document.getElementById("request").value;
+            getJSONP(requestURL, function(data){
+                document.getElementById("responce").value = JSON.stringify(data);
+            });
+        }
+    </script>
+</body>
+</html>
